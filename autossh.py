@@ -25,6 +25,6 @@ if has_tmux:
 cmd = ["autossh", hostname, "-M", "0"]
 if port:
     cmd.extend(('-p', port))
-cmd.extend(("-t", "~/.bin/tmux.py {<server>} {<sessionname>}".format(**args)))
+cmd.extend(("-t", "~/.local/bin/tmux.py {<server>} {<sessionname>}".format(**args)))
 print(cmd)
 os.execvpe("/usr/bin/autossh", cmd, os.environ)

@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 tmux.py
@@ -180,18 +180,18 @@ if __name__ == "__main__":
             pass
         exit(0)
     if args.get('-l'):
-        print server.list_sessions()
+        print(server.list_sessions())
         exit(0)
     try:
         session = server.new_session(
             session_name=session_name)
     except exc.TmuxSessionExists:
-        print "Session exists"
+        print("Session exists")
         pass
     try:
         builder.build(session)
     except exc.TmuxSessionExists:
-        print "builder session exists"
+        print("builder session exists")
         session = session or builder.session or server.findWhere(
             {'session_name': session_name})
 
