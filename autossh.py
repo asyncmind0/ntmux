@@ -3,7 +3,9 @@
 Usage: autossh.py <hostname> [<server> <sessionname>]
 
 """
+import signal
 import os
+from os.path import isfile
 from docopt import docopt
 from sh import tmux
 
@@ -22,9 +24,17 @@ if has_tmux:
     prev_window_name = tmux("display-message", "-p", "x'#W")
     tmux("rename-window", hostname)
 
-cmd = ["autossh", hostname, "-M", "0"]
+cmd = ["/usr/sbin/envoy-exec", "/bin/autossh", hostname, "-M", "0",
+       "-o", "ServerAliveInterval=10", "ServerAliveCountMax=5"]
 if port:
     cmd.extend(('-p', port))
-cmd.extend(("-t", "~/.local/bin/tmux.py {<server>} {<sessionname>}".format(**args)))
-print(cmd)
-os.execvpe("/usr/bin/autossh", cmd, os.environ)
+cmd.extend(("-t", "~/.local/bin/tmux.py {<server>} {<sessionname>}".format(
+    **args)))
+
+pid_file = "/tmp/autossh_%s.pid" % hostname
+os.environ['AUTOSSH_PIDFILE'] = pid_file
+if isfile(pid_file):
+    with open(pid_file) as pidf:
+        os.kill(int(pidf.read()), signal.SIGINT)
+
+os.execvpe(cmd[0], cmd, dict(os.environ))
