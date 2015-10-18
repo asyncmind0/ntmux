@@ -24,7 +24,7 @@ import platform
 
 
 formatted_hostname = platform.node().split('.')[0].lower()
-cmd = ("python2 %s inner {name} "
+cmd = ("python %s inner {name} "
        "--base-index={base_index}") % __file__
 
 

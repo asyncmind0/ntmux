@@ -28,7 +28,7 @@ cmd = ["/usr/sbin/envoy-exec", "/bin/autossh", hostname, "-M", "0",
        "-o", "ServerAliveInterval=10", "ServerAliveCountMax=5"]
 if port:
     cmd.extend(('-p', port))
-cmd.extend(("-t", "~/.local/bin/tmux.py {<server>} {<sessionname>}".format(
+cmd.extend(("-t", "~/.local/bin/tmux.py -r {<server>} {<sessionname>}".format(
     **args)))
 
 pid_file = "/tmp/autossh_%s.pid" % hostname
