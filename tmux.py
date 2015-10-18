@@ -60,13 +60,13 @@ wc = window_config
 sc = session_config
 
 series9 = {}
-sc('left', series9, [wc('conf')])
-sc('tleft', series9, [wc('txplan')])
-sc('right', series9, [wc('misc')])
+sc('left', series9, [wc('conf'), wc('dev')])
+sc('right', series9, [wc('misc'), wc('devops')])
 sc('xplan', series9)
 sc('conf', series9)
 sc('monitor', config_map=series9)
 sc('media', config_map=series9)
+sc('tleft', series9, [wc('txplan')])
 
 acer = {}
 sc('acer', acer)
@@ -150,10 +150,6 @@ if __name__ == "__main__":
     remote = args['-r']  # or os.environ.get('SSH_TTY')
     kill = args['-k']
     os.environ['TERM'] = 'xterm-256color'
-
-    if 'TMUX' in os.environ:
-        os.system("tmux renamew %s" % session_name)
-        del os.environ['TMUX']
     host_config = config_map.get(formatted_hostname, {})
     session_config = host_config.get(session_name, sc(session_name))
     windows = session_config['windows']
@@ -229,6 +225,8 @@ if __name__ == "__main__":
         session.cmd("set-option", "status-left", status_left)
         session.cmd('set-environment', 'SSH_AUTH_SOCK', os.environ.get('SSH_AUTH_SOCK'))
         session.cmd('set-environment', 'SSH_AGENT_PID', os.environ.get('SSH_AGENT_PID'))
+        session.cmd("set_option", '-g', 'allow-rename', 'on')
+        session.cmd("set_option", '-g', 'automatic-rename', 'on')
 
     if not args['-d']:
         server.attach_session(session_name)
