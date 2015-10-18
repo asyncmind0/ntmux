@@ -31,7 +31,7 @@ if port:
 cmd.extend(("-t", "~/.local/bin/tmux.py -r {<server>} {<sessionname>}".format(
     **args)))
 
-pid_file = "/tmp/autossh_%s.pid" % hostname
+pid_file = "/tmp/autossh_%(<server>)s_%(<sessionname>)s.pid" % args
 os.environ['AUTOSSH_PIDFILE'] = pid_file
 if isfile(pid_file):
     with open(pid_file) as pidf:
