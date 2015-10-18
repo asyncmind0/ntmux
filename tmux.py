@@ -149,6 +149,7 @@ if __name__ == "__main__":
     shell_command = args['-c'] or ''
     remote = args['-r']  # or os.environ.get('SSH_TTY')
     kill = args['-k']
+    os.environ['TERM'] = 'xterm-256color'
 
     if 'TMUX' in os.environ:
         os.system("tmux renamew %s" % session_name)
