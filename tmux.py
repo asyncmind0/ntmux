@@ -150,6 +150,7 @@ if __name__ == "__main__":
     remote = args['-r']  # or os.environ.get('SSH_TTY')
     kill = args['-k']
     os.environ['TERM'] = 'xterm-256color'
+        
     host_config = config_map.get(formatted_hostname, {})
     session_config = host_config.get(session_name, sc(session_name))
     windows = session_config['windows']
@@ -232,4 +233,6 @@ if __name__ == "__main__":
         session.cmd("set_option", '-g', 'automatic-rename', 'on')
 
     if not args['-d']:
+        if 'TMUX' in os.environ:
+            os.system('tmux rename-window %s' % session_name)
         server.attach_session(session_name)
