@@ -149,9 +149,7 @@ if __name__ == "__main__":
     shell_command = args['-c'] or ''
     remote = args['-r']  # or os.environ.get('SSH_TTY')
     kill = args['-k']
-    os.environ['TERM'] = (
-        'xterm-256color'
-        if os.system('infocmp st-256color') > 0 else 'st-256color')
+    os.environ['TERM'] = 'xterm-256color'
     host_config = config_map.get(formatted_hostname, {})
     session_config = host_config.get(session_name, sc(session_name))
     windows = session_config['windows']
