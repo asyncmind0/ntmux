@@ -35,6 +35,9 @@ pid_file = "/tmp/autossh_%(<server>)s_%(<sessionname>)s.pid" % args
 os.environ['AUTOSSH_PIDFILE'] = pid_file
 if isfile(pid_file):
     with open(pid_file) as pidf:
-        os.kill(int(pidf.read()), signal.SIGINT)
+        try:
+            os.kill(int(pidf.read()), signal.SIGINT)
+        except os.ProcessLookupError as e:
+            os.unlink(pid_file)
 
 os.execvpe(cmd[0], cmd, dict(os.environ))
