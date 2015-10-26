@@ -7,7 +7,7 @@ import signal
 import os
 from os.path import isfile
 from docopt import docopt
-from sh import tmux
+from plumbum.cmd import tmux
 
 args = docopt(__doc__)
 hostname = args.get('<hostname>', 'autossh')
@@ -37,7 +37,7 @@ if isfile(pid_file):
     with open(pid_file) as pidf:
         try:
             os.kill(int(pidf.read()), signal.SIGINT)
-        except os.ProcessLookupError as e:
+        except ProcessLookupError as e:
             os.unlink(pid_file)
 
 os.execvpe(cmd[0], cmd, dict(os.environ))
