@@ -23,9 +23,12 @@ prev_window_name = None
 if has_tmux:
     prev_window_name = tmux("display-message", "-p", "x'#W")
     tmux("rename-window", hostname)
-
-cmd = ["/usr/sbin/envoy-exec", "/bin/autossh", hostname, "-M", "0",
-       "-o", "ServerAliveInterval=10", "ServerAliveCountMax=5"]
+cmd = []
+envoy = "/usr/sbin/envoy-exec"
+if isfile(envoy):
+    cmd.append(envoy)
+cmd.extend(["/bin/autossh", hostname, "-M", "0",
+        "-o", "ServerAliveInterval=10", "ServerAliveCountMax=5"])
 if port:
     cmd.extend(('-p', port))
 cmd.extend(("-t", "~/.local/bin/tmux.py -r {<server>} {<sessionname>}".format(
@@ -37,7 +40,7 @@ if isfile(pid_file):
     with open(pid_file) as pidf:
         try:
             os.kill(int(pidf.read()), signal.SIGINT)
-        except ProcessLookupError as e:
+        except Exception as e:
             os.unlink(pid_file)
 
 os.execvpe(cmd[0], cmd, dict(os.environ))
