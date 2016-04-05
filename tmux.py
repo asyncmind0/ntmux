@@ -163,7 +163,7 @@ if __name__ == "__main__":
         })
 
     server = Server(
-        socket_path=expanduser("~/.tmux/%s_socket" % server_name),
+        socket_path=expanduser("/tmp/tmux_%s_socket" % server_name),
         #socket_name="tmux_%s_new" % server_name,
         config_file=expanduser("~/.tmux/%s.conf" % server_name))
     builder = WorkspaceBuilder(sconf=session_config, server=server)
