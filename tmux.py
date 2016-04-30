@@ -150,7 +150,7 @@ if __name__ == "__main__":
     remote = args['-r']  # or os.environ.get('SSH_TTY')
     kill = args['-k']
     os.environ['TERM'] = 'xterm-256color'
-        
+
     host_config = config_map.get(formatted_hostname, {})
     session_config = host_config.get(session_name, sc(session_name))
     windows = session_config['windows']
@@ -222,10 +222,11 @@ if __name__ == "__main__":
     print(status_right)
     print(status_left)
     for session in server.list_sessions():
-        session.cmd("set-option", "status-right", status_right)
-        session.cmd("set-option", "status-left", status_left)
-        session.cmd('set-environment', 'SSH_AUTH_SOCK', os.environ.get('SSH_AUTH_SOCK'))
-        session.cmd('set-environment', 'SSH_AGENT_PID', os.environ.get('SSH_AGENT_PID'))
+        print(session.get('session_name'))
+        session.set_option("status-right", status_right)
+        session.set_option("status-left", status_left)
+        session.set_environment('SSH_AUTH_SOCK', os.environ.get('SSH_AUTH_SOCK'))
+        session.set_environment('SSH_AGENT_PID', os.environ.get('SSH_AGENT_PID'))
         if not remote:
             session.cmd('set-environment', '-gu', 'SSH_HOST_STR')
             session.cmd('set-environment', '-gu', 'SSH_TTY_SET')
