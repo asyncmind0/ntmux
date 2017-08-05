@@ -60,8 +60,24 @@ wc = window_config
 sc = session_config
 
 series9 = {}
-sc('left', series9, [wc('conf'), wc('dev')])
-sc('right', series9, [wc('misc'), wc('devops')])
+sc('left', series9, [
+    wc('python'),
+    wc('devops'),
+    wc('js'),
+    wc('android'),
+    wc('ios'),
+    wc('home'),
+])
+
+sc('right', series9, [
+    wc('python_dev'),
+    wc('devops_dev'),
+    wc('js_dev'),
+    wc('android_dev'),
+    wc('ios_dev'),
+    wc('home_dev'),
+])
+
 sc('xplan', series9)
 sc('conf', series9)
 sc('monitor', config_map=series9)
