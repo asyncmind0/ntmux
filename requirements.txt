@@ -1,2 +1,2 @@
-tmuxp==0.11.0
 docopt
+tmuxp==0.11.0
