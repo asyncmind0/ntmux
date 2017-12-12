@@ -21,6 +21,9 @@ import os
 from os.path import expanduser
 from tmuxp import Server, WorkspaceBuilder, exc
 import platform
+import logging
+
+logging.basicConfig(level=logging.INFO)
 
 
 formatted_hostname = platform.node().split('.')[0].lower()
@@ -238,16 +241,19 @@ if __name__ == "__main__":
     print(status_right)
     print(status_left)
     for session in server.list_sessions():
-        print(session.get('session_name'))
-        session.set_option("status-right", status_right)
-        session.set_option("status-left", status_left)
-        session.set_environment('SSH_AUTH_SOCK', os.environ.get('SSH_AUTH_SOCK'))
-        session.set_environment('SSH_AGENT_PID', os.environ.get('SSH_AGENT_PID'))
-        if not remote:
-            session.cmd('set-environment', '-gu', 'SSH_HOST_STR')
-            session.cmd('set-environment', '-gu', 'SSH_TTY_SET')
-        session.cmd("set_option", '-g', 'allow-rename', 'on')
-        session.cmd("set_option", '-g', 'automatic-rename', 'on')
+        try:
+            print(session.get('session_name'))
+            session.set_option("status-right", status_right)
+            session.set_option("status-left", status_left)
+            session.set_environment('SSH_AUTH_SOCK', os.environ.get('SSH_AUTH_SOCK'))
+            session.set_environment('SSH_AGENT_PID', os.environ.get('SSH_AGENT_PID'))
+            if not remote:
+                session.cmd('set-environment', '-gu', 'SSH_HOST_STR')
+                session.cmd('set-environment', '-gu', 'SSH_TTY_SET')
+            session.cmd("set_option", '-g', 'allow-rename', 'on')
+            session.cmd("set_option", '-g', 'automatic-rename', 'on')
+        except Exception:
+            logging.exception("error setting up session")
 
     if not args['-d']:
         if 'TMUX' in os.environ:
