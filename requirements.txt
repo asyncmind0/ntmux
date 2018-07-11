@@ -1,2 +1,2 @@
 docopt
-tmuxp
+tmuxp>1.4.0
