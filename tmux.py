@@ -18,8 +18,9 @@ Options:
 from docopt import docopt
 import os
 from os.path import expanduser
-from tmuxp import exc, WorkspaceBuilder
+from tmuxp import WorkspaceBuilder
 from libtmux.server import Server
+from libtmux import exc
 import platform
 import logging
 import yaml
