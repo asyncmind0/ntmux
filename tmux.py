@@ -37,8 +37,14 @@ def window_config(name, window_config):
         'window_name': name,
         'panes': [
             {
-                'shell_command': [window_config.get('shell_command', default_inner_cmd.format(
-                    name=name))],
+                'shell_command': [
+                    window_config.get(
+                        'shell_command',
+                        default_inner_cmd.format(
+                            name=name
+                        )
+                    )
+                ],
             },
         ],
     }
