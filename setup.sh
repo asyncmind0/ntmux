@@ -1,7 +1,7 @@
 #!/bin/sh -x
-BASE_DIR=/usr/local/etc/zsh
+BASE_DIR=/usr/local/etc/tmux
 if [ ! -d $BASE_DIR ]; then
-    BASE_DIR=$HOME/.zsh
+    BASE_DIR=$HOME/.tmux/
 fi
 if [ -z "$NO_PIP_INSTALL" ]; then
 pip install -U --user -r $BASE_DIR/requirements.txt
