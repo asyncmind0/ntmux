@@ -1,5 +1,6 @@
 #!/bin/sh
-SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
+SCRIPTPATH="$(dirname "$(readlink -f "$0")")"
+cd $SCRIPTPATH
 export WORKON_HOME=${SCRIPTPATH}/venv
 if [ -d "$WORKON_HOME" ]; then
     pipenv run tmux.py $@
