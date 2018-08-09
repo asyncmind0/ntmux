@@ -9,4 +9,5 @@ fi
 mkdir -p $HOME/.local/bin/
 ln -sf $HOME/.tmux/autossh.py $HOME/.local/bin/
 ln -sf $HOME/.tmux/tmux.py $HOME/.local/bin/
+ln -sf $HOME/.tmux/tmuxpy $HOME/.local/bin/
 ln -sf $HOME/.tmux/inner.conf $HOME/.tmux.conf
