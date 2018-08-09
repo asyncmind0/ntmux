@@ -64,7 +64,7 @@ def attach_tmux(args):
     if args['port']:
         cmd.extend(('-p', args['port']))
     cmd.extend((
-        "-t", "PATH=$PATH:~/.local/bin/ tmux.py -r {<server>} {<sessionname>}".format(
+        "-t", "PATH=$PATH:~/.local/bin/ exec tmuxpy -r {<server>} {<sessionname>}".format(
             **args)))
 
     if args['identity']:

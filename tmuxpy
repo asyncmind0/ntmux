@@ -1,0 +1,8 @@
+#!/bin/sh
+SCRIPTPATH="$( cd "$(dirname "$0")" ; pwd -P )"
+export WORKON_HOME=${SCRIPTPATH}/venv
+if [ -d "$WORKON_HOME" ]; then
+    pipenv run tmux.py $@
+else
+    tmux.py $@
+fi
