@@ -1,6 +1,14 @@
-before_script:
-  - docker info
+image: docker:latest
+services:
+  - docker:dind
+stages:
+  - build
 
-build_image:
+docker:
+  stage: build
+  artifacts:
+    paths:
+      - dist/linux/autosshpy
+      - dist/linux/tmuxpy
   script:
     - docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux
