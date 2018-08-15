@@ -1,0 +1,6 @@
+before_script:
+  - docker info
+
+build_image:
+  script:
+    - docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux
