@@ -8,7 +8,11 @@ docker:
   stage: build
   artifacts:
     paths:
-      - dist/linux/autosshpy
-      - dist/linux/tmuxpy
+      - etc/
+      - bin/
   script:
     - docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux
+    - mkdir -p etc/tmuxpy bin
+    - cp *.conf etc/tmuxpy/
+    - cp *.yml etc/tmuxpy/
+    - cp dist/linux/* bin/

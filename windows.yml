@@ -1,0 +1,52 @@
+{
+    'bg': 'red',
+    'fg': 'white',
+    'windows': {
+        'left': {
+            'windows': {
+                'python': {},
+                'devops': {},
+                'js': {},
+                'android': {},
+                'ios': {},
+                'home': {}
+            }
+        },
+        'right': {
+            'windows': {
+                'python_dev': {},
+                'devops_dev': {},
+                'js_dev': {},
+                'android_dev': {},
+                'ios_dev': {},
+                'home_dev': {}
+            }
+        },
+        'comm': {
+            'windows': {
+                'network': {},
+                'system': {},
+                'salt': {},
+                'logs': {},
+                'monitor': {}
+            }
+        },
+        'test': {
+            'windows': {
+                'test_inner': {
+                },
+                'test2': {},
+            }
+        },
+        'test_inner': {
+            'windows': {
+                'ping': {
+                    'shell_command': 'ping google.com'
+                },
+                'htop': {
+                    'shell_command': 'htop'
+                }
+            }
+        }
+    }
+}
