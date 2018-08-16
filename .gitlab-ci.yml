@@ -11,10 +11,7 @@ docker:
       - etc/
       - bin/
   script:
-    - docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux:python2 \
-        pyinstaller --clean -y --dist ./dist/linux --workpath /tmp autossh.spec && \
-        pyinstaller --clean -y --dist ./dist/linux --workpath /tmp tmux.spec && \
-        chown -R --reference=. ./dist/linux
+    - docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux:python2 "pyinstaller --clean -y --dist ./dist/linux --workpath /tmp autossh.spec && pyinstaller --clean -y --dist ./dist/linux --workpath /tmp tmux.spec &&  chown -R --reference=. ./dist/linux"
     - mkdir -p etc/tmuxpy bin
     - cp inner.conf etc/tmuxpy/
     - cp outer.conf etc/tmuxpy/
