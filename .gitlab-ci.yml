@@ -1,4 +1,4 @@
-image: docker:python2
+image: docker:latest
 services:
   - docker:dind
 stages:
@@ -11,7 +11,7 @@ docker:
       - etc/
       - bin/
   script:
-    - docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux
+    - docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux:python2
     - mkdir -p etc/tmuxpy bin
     - cp inner.conf etc/tmuxpy/
     - cp outer.conf etc/tmuxpy/
