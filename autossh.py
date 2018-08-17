@@ -10,9 +10,19 @@ import signal
 import os
 from os.path import isfile
 from docopt import docopt
-from plumbum import FG
-from plumbum.cmd import tmux, ssh
+import subprocess
 import shlex
+
+
+def get_env():
+    env = dict(os.environ)  # make a copy of the environment
+    lp_key = 'LD_LIBRARY_PATH'  # for Linux and *BSD.
+    lp_orig = env.get(lp_key + '_ORIG')  # pyinstaller >= 20160820 has this
+    if lp_orig is not None:
+        env[lp_key] = lp_orig  # restore the original, unmodified value
+    else:
+        env.pop(lp_key, None)  # last resort: remove the env var
+    return env
 
 
 def optparsing():
@@ -29,27 +39,12 @@ def optparsing():
     print(args)
     return args
 
-def deploy(args):
-    ssh[
-        args['hostname'],
-        'git clone https://jagguli@bitbucket.org/jagguli/dottmux.git ~/.tmux' % args
-    ] & FG((0, 128))
-    ssh[
-        args['hostname'],
-        'tmux -V'
-    ] & FG
-    ssh[
-        args['hostname'],
-        'cd ~/.tmux; sh setup.sh'
-    ] & FG
-
-
 def attach_tmux(args):
     has_tmux = os.environ.get('TMUX')
     prev_window_name = None
     if has_tmux:
-        prev_window_name = tmux("display-message", "-p", "x'#W")
-        tmux("rename-window", args['hostname'])
+        prev_window_name = subprocess.check_output(["tmux", "display-message", "-p", "x'#W"], env=get_env())
+        subprocess.check_call(["tmux", "rename-window", args['hostname']], env=get_env())
     cmd = []
     cmd.extend(
         [
@@ -86,7 +81,7 @@ def attach_tmux(args):
             except Exception as e:
                 os.unlink(pid_file)
 
-    os.execvpe(cmd[0], cmd, dict(os.environ))
+    os.execvpe(cmd[0], cmd, get_env())
 
 if __name__ == '__main__':
     #deploy(optparsing())
