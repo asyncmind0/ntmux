@@ -33,6 +33,18 @@ formatted_hostname = platform.node().split('.')[0].lower()
 default_inner_cmd = ("python %s inner {name} ") % __file__
 
 
+def get_env():
+    env = dict(os.environ)  # make a copy of the environment
+    lp_key = 'LD_LIBRARY_PATH'  # for Linux and *BSD.
+    lp_orig = env.get(lp_key + '_ORIG')  # pyinstaller >= 20160820 has this
+    if lp_orig is not None:
+        env[lp_key] = lp_orig  # restore the original, unmodified value
+    else:
+        env.pop(lp_key, None)  # last resort: remove the env var
+    return env
+
+
+
 def window_config(name, window_config):
     return {
         'window_name': name,
@@ -98,6 +110,7 @@ Please set config in one of these locations:
 %s""" % (conf_file, "\n".join(config_locations)))
 
 if __name__ == "__main__":
+    os.environ['LD_LIBRARY_PATH'] = os.environ['LD_LIBRARY_PATH_ORIG']
     args = docopt(__doc__)
     print(args)
     server_name = args['<server>']
