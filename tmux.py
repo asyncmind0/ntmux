@@ -18,6 +18,7 @@ Options:
 """
 from docopt import docopt
 import os
+import sys
 from os.path import expanduser, exists
 from tmuxp import WorkspaceBuilder
 from libtmux.server import Server
@@ -31,6 +32,7 @@ logging.basicConfig(level=logging.INFO)
 
 formatted_hostname = platform.node().split('.')[0].lower()
 default_inner_cmd = ("python %s inner {name} ") % __file__
+FROZEN = getattr(sys, 'frozen', False)
 
 
 def get_env():
@@ -110,7 +112,8 @@ Please set config in one of these locations:
 %s""" % (conf_file, "\n".join(config_locations)))
 
 if __name__ == "__main__":
-    os.environ['LD_LIBRARY_PATH'] = os.environ['LD_LIBRARY_PATH_ORIG']
+    if FROZEN:
+        os.environ['LD_LIBRARY_PATH'] = os.environ.get('LD_LIBRARY_PATH_ORIG', '')
     args = docopt(__doc__)
     print(args)
     server_name = args['<server>']
