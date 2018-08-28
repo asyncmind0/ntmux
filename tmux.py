@@ -31,7 +31,7 @@ logging.basicConfig(level=logging.INFO)
 
 
 formatted_hostname = platform.node().split('.')[0].lower()
-default_inner_cmd = ("python %s inner {name} ") % __file__
+default_inner_cmd = "tmuxpy inner {name} "
 FROZEN = getattr(sys, 'frozen', False)
 
 
