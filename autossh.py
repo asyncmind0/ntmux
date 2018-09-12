@@ -49,8 +49,8 @@ def attach_tmux(args):
     cmd.extend(
         [
             "autossh",
-            args['hostname'],
             "-M", "0",
+            args['hostname'],
             "-o",
             "ServerAliveInterval=10",
             "ServerAliveCountMax=5",
