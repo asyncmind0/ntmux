@@ -19,13 +19,14 @@ Options:
 from docopt import docopt
 import os
 import sys
-from os.path import expanduser, exists
+from os.path import expanduser, exists, join
 from tmuxp import WorkspaceBuilder
 from libtmux.server import Server
 from libtmux import exc
 import platform
 import logging
 import yaml
+import tempfile
 
 logging.basicConfig(level=logging.INFO)
 
@@ -145,7 +146,10 @@ if __name__ == "__main__":
         })
 
     server = Server(
-        socket_path=expanduser("/tmp/tmux_%s_socket" % server_name),
+        socket_path=join(
+            tempfile.gettempdir(),
+            "tmux_%s_socket" % server_name
+        ),
         #socket_name="tmux_%s_new" % server_name,
         config_file=get_config("%s.conf" % server_name),
     )
