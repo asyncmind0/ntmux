@@ -50,16 +50,18 @@ def attach_tmux(args):
         [
             "autossh",
             "-M", "0",
+            "-t",
             args['hostname'],
             "-o",
             "ServerAliveInterval=10",
+            "-o",
             "ServerAliveCountMax=5",
         ]
     )
     if args['port']:
         cmd.extend(('-p', args['port']))
     cmd.extend((
-        "-t", "exec tmuxpy -r {<server>} {<sessionname>}".format(
+        "exec tmuxpy -r {<server>} {<sessionname>}".format(
             **args)))
 
     if args['identity']:
