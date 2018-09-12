@@ -8,10 +8,10 @@ Options:
 """
 import signal
 import os
-from os.path import isfile
+from os.path import isfile, join
 from docopt import docopt
 import subprocess
-import shlex
+import tempfile
 
 
 def get_env():
@@ -44,7 +44,14 @@ def attach_tmux(args):
     prev_window_name = None
     if has_tmux:
         prev_window_name = subprocess.check_output(["tmux", "display-message", "-p", "x'#W"], env=get_env())
-        subprocess.check_call(["tmux", "rename-window", args['hostname']], env=get_env())
+        subprocess.check_call(
+            [
+             "tmux",
+             "rename-window",
+             args['hostname']
+            ],
+            env=get_env()
+        )
     cmd = []
     cmd.extend(
         [
@@ -67,7 +74,10 @@ def attach_tmux(args):
     if args['identity']:
         cmd.extend(['-i', args['identity']])
 
-    pid_file = "/tmp/autossh_%(<server>)s_%(<sessionname>)s.pid" % args
+    pid_file = join(
+        tempfile.gettempdir(),
+        "autossh_%(<server>)s_%(<sessionname>)s.pid" % args
+    )
     os.environ['AUTOSSH_PIDFILE'] = pid_file
     os.environ['SSH_AUTH_SOCK'] = "/run/user/1000/gnupg/S.gpg-agent.ssh"
     os.environ["PATH"] += os.pathsep + os.pathsep.join(
