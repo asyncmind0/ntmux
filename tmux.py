@@ -17,13 +17,14 @@ Options:
 """
 from docopt import docopt
 import os
-from os.path import expanduser
+from os.path import expanduser, join
 from tmuxp import WorkspaceBuilder
 from libtmux.server import Server
 from libtmux import exc
 import platform
 import logging
 import yaml
+import tempdir
 
 logging.basicConfig(level=logging.INFO)
 
@@ -112,7 +113,7 @@ if __name__ == "__main__":
         })
 
     server = Server(
-        socket_path=expanduser("/tmp/tmux_%s_socket" % server_name),
+        socket_path=join(tempfile.gettempdir(), "tmux_%s_socket" % server_name),
         #socket_name="tmux_%s_new" % server_name,
         config_file=expanduser("~/.tmux/%s.conf" % server_name))
     builder = WorkspaceBuilder(sconf=session_config, server=server)
