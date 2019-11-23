@@ -18,13 +18,13 @@ Options:
 from docopt import docopt
 import os
 from os.path import expanduser, join
-from tmuxp import WorkspaceBuilder
+from tmuxp.workspacebuilder import WorkspaceBuilder
 from libtmux.server import Server
 from libtmux import exc
 import platform
 import logging
 import yaml
-import tempdir
+import tempfile
 
 logging.basicConfig(level=logging.INFO)
 
@@ -120,7 +120,7 @@ if __name__ == "__main__":
     session = None
     if args.get('-k'):
         try:
-            session = server.findWhere(
+            session = server.find_where(
                 {'session_name': session_name})
             session.kill_session()
         except Exception as e:
