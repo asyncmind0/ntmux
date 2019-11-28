@@ -7,8 +7,8 @@
                 'python': {},
                 'devops': {},
                 'js': {},
-                'android': {},
-                'ios': {},
+                'mobile': {},
+                'riak': {},
                 'home': {}
             }
         },
@@ -17,8 +17,8 @@
                 'python_dev': {},
                 'devops_dev': {},
                 'js_dev': {},
-                'android_dev': {},
-                'ios_dev': {},
+                'mobile_dev': {},
+                'riak_dev': {},
                 'home_dev': {}
             }
         },
