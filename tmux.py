@@ -116,6 +116,7 @@ if __name__ == "__main__":
         socket_path=join(tempfile.gettempdir(), "tmux_%s_socket" % server_name),
         #socket_name="tmux_%s_new" % server_name,
         config_file=expanduser("~/.tmux/%s.conf" % server_name))
+    
     builder = WorkspaceBuilder(sconf=session_config, server=server)
     session = None
     if args.get('-k'):
@@ -131,8 +132,10 @@ if __name__ == "__main__":
         print(server.list_sessions())
         exit(0)
     try:
+        logging.debug("Creating new Session ...")
         session = server.new_session(
             session_name=session_name)
+        logging.debug("Done Creating new Session.")
     except exc.TmuxSessionExists:
         logging.debug("Session exists")
         pass
@@ -158,31 +161,31 @@ if __name__ == "__main__":
     else:
         session = session.pop()
 
-    if server_name == "outer":
-        session.set_option("status-position", "top")
-    else:
-        session.set_option("status-position", "bottom")
+    #if server_name == "outer":
+    #    session.set_option("status-position", "top")
+    #else:
+    #    session.set_option("status-position", "bottom")
 
     if not args['-d']:
         server.cmd("detach-client", "-s", session_name)
 
-
     status_right, status_left = get_status_line(host_config, remote)
-    for session in server.list_sessions():
-        try:
-            session.set_option("status-right", status_right)
-            session.set_option("status-left", status_left)
-            session.set_environment('SSH_AUTH_SOCK', os.environ.get('SSH_AUTH_SOCK'))
-            session.set_environment('SSH_AGENT_PID', os.environ.get('SSH_AGENT_PID'))
-            if not remote:
-                session.cmd('set-environment', '-gu', 'SSH_HOST_STR')
-                session.cmd('set-environment', '-gu', 'SSH_TTY_SET')
-            session.cmd("set_option", '-g', 'allow-rename', 'on')
-            session.cmd("set_option", '-g', 'automatic-rename', 'on')
-        except Exception:
-            logging.exception("error setting up session")
+    #for session in sessions:
+    try:
+        session.set_option("status-right", status_right)
+        session.set_option("status-left", status_left)
+        session.set_environment('SSH_AUTH_SOCK', os.environ.get('SSH_AUTH_SOCK'))
+        session.set_environment('SSH_AGENT_PID', os.environ.get('SSH_AGENT_PID'))
+        if not remote:
+            session.cmd('set-environment', '-gu', 'SSH_HOST_STR')
+            session.cmd('set-environment', '-gu', 'SSH_TTY_SET')
+        session.cmd("set_option", '-g', 'allow-rename', 'on')
+        session.cmd("set_option", '-g', 'automatic-rename', 'on')
+    except Exception:
+        logging.exception("error setting up session")
 
     if not args['-d']:
         if 'TMUX' in os.environ and server_name == 'outer':
             os.system('tmux rename-window %s' % session_name)
-        server.attach_session(session_name)
+        else:
+            server.attach_session(session_name)
