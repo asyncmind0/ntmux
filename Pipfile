@@ -10,4 +10,4 @@ tmuxp = ">=1.4.0"
 [dev-packages]
 
 [requires]
-python_version = "2.7"
+python_version = "3"
