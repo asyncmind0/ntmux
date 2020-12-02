@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/env python
 """
 Usage: autossh.py [options] <hostname> [<server> <sessionname>]
 
