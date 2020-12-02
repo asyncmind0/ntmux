@@ -66,7 +66,7 @@ def session_config(name, config_map=None, windows=None):
 
 
 def get_status_line(host_config, remote):
-    status_left = '#[fg={fg},bg={bg},bold] #S #[fg=colour238,bg=colour234,nobold]'
+    status_left = '#[fg={fg},bg={bg},bold] #S %H:%M:%S #[fg=colour238,bg=colour234,nobold]'
     status_right = "#[fg={fg},bg={bg},bold] #h "
     bg = host_config.get('bg', 'red') if remote else 'green'
     fg = host_config.get('fg', 'white') if remote else 'black'
@@ -92,7 +92,7 @@ if __name__ == "__main__":
     os.chdir(expanduser("~"))
 
     host_config = {}
-    for outer, inners in yaml.load(open(expanduser(args['--config'])))['windows'].items():
+    for outer, inners in yaml.load(open(expanduser(args['--config'])), Loader=yaml.FullLoader)['windows'].items():
         session_config(
             outer,
             host_config,
