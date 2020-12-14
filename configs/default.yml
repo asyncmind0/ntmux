@@ -2,24 +2,31 @@
     'bg': 'red',
     'fg': 'white',
     'windows': {
-        'left': {
+        'term1': {
             'windows': {
                 'python': {},
                 'devops': {},
+                'riak': {},
                 'js': {},
                 'mobile': {},
-                'riak': {},
                 'home': {}
             }
         },
-        'right': {
+        'term0': {
             'windows': {
                 'python_dev': {},
                 'devops_dev': {},
+                'riak_dev': {},
                 'js_dev': {},
                 'mobile_dev': {},
-                'riak_dev': {},
                 'home_dev': {}
+            }
+        },
+        'term2': {
+            'windows': {
+                'local': {},
+                'zebra': {},
+                'bison': {},
             }
         },
         'comm': {

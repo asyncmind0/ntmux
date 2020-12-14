@@ -88,11 +88,17 @@ if __name__ == "__main__":
     session_name = args['<session>']
     remote = args['-r']  # or os.environ.get('SSH_TTY')
     kill = args['-k']
-    os.environ['TERM'] = 'xterm-256color'
     os.chdir(expanduser("~"))
 
     host_config = {}
-    for outer, inners in yaml.load(open(expanduser(args['--config'])), Loader=yaml.FullLoader)['windows'].items():
+    for outer, inners in yaml.load(
+        open(
+            expanduser(
+                args['--config']
+            )
+        ),
+        Loader=yaml.FullLoader
+    )['windows'].items():
         session_config(
             outer,
             host_config,
