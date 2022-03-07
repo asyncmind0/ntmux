@@ -29,47 +29,48 @@ import tempfile
 logging.basicConfig(level=logging.INFO)
 
 
-formatted_hostname = platform.node().split('.')[0].lower()
+formatted_hostname = platform.node().split(".")[0].lower()
 default_inner_cmd = ("python %s inner {name} ") % __file__
 
 
-def window_config(name, window_config):
+def gen_window_config(name, window_config):
+    print("window config: %s" % window_config)
     return {
-        'window_name': name,
-        'panes': [
+        "window_name": name,
+        "panes": [
             {
-                'shell_command': [
+                "shell_command": [
                     window_config.get(
-                        'shell_command',
-                        default_inner_cmd.format(
-                            name=name
-                        )
+                        "shell_command", default_inner_cmd.format(name=name)
                     )
                 ],
+                "start_directory": window_config.get(
+                    "start_directory", "~/tmp"
+                ),
             },
         ],
     }
 
 
-def session_config(name, config_map=None, windows=None):
-    session_map = {
-        'session_name': name,
-        'start_directory': '~',
-        'windows': windows or [],
-        'options': {
-            'base-index': 0
-        },
+def gen_session_config(name, config_map):
+    return {
+        "session_name": name,
+        "windows": [
+            gen_window_config(name, config)
+            for name, config in config_map.get("windows", {}).items()
+        ],
+        "options": {"base-index": 0},
+        "start_directory": config_map.get("start_directory", "~/streethawk"),
     }
-    if config_map is not None:
-        config_map[name] = session_map
-    return session_map
 
 
 def get_status_line(host_config, remote):
-    status_left = '#[fg={fg},bg={bg},bold] #S #[fg=colour238,bg=colour234,nobold]'
+    status_left = (
+        "#[fg={fg},bg={bg},bold] #S #[fg=colour238,bg=colour234,nobold]"
+    )
     status_right = "#[fg={fg},bg={bg},bold] #h %H:%M:%S"
-    bg = host_config.get('bg', 'red') if remote else 'green'
-    fg = host_config.get('fg', 'white') if remote else 'black'
+    bg = host_config.get("bg", "red") if remote else "green"
+    fg = host_config.get("fg", "white") if remote else "black"
     status_left = status_left.format(
         bg=bg,
         fg=fg,
@@ -84,63 +85,70 @@ def get_status_line(host_config, remote):
 if __name__ == "__main__":
     args = docopt(__doc__)
     print(args)
-    server_name = args['<server>']
-    session_name = args['<session>']
-    remote = args['-r']  # or os.environ.get('SSH_TTY')
-    kill = args['-k']
+    server_name = args["<server>"]
+    session_name = args["<session>"]
+    remote = args["-r"]  # or os.environ.get('SSH_TTY')
+    kill = args["-k"]
     os.chdir(expanduser("~"))
 
     host_config = {}
     for outer, inners in yaml.load(
-        open(
-            expanduser(
-                args['--config']
-            )
-        ),
-        Loader=yaml.FullLoader
-    )['windows'].items():
-        session_config(
+        open(expanduser(args["--config"])), Loader=yaml.FullLoader
+    )["windows"].items():
+        host_config[outer] = gen_session_config(
             outer,
-            host_config,
-            [
-                window_config(name, config)
-                for name, config in inners['windows'].items()
-            ]
+            inners,
         )
 
-    session_config = host_config.get(session_name, session_config(session_name))
-    windows = session_config['windows']
-    for i in range(10-len(windows)):
-        session_config['windows'].append({
-            'window_name': session_name,
-            'panes': [
-                {'shell_command': []}
-            ]
-        })
+    session_config = host_config.get(
+        session_name, gen_session_config(session_name, {})
+    )
+    windows = session_config["windows"]
+    for i in range(10 - len(windows)):
+        # if session_name == "python_dev":
+        #    import ipdb
+
+        #    ipdb.set_trace()  ######## FIXME:REMOVE ME steven.joseph ################
+        print(session_config)
+        session_config["windows"].append(
+            {
+                "window_name": session_name,
+                "start_directory": session_config.get(
+                    "start_directory", "~/snap"
+                ),
+                "panes": [
+                    {
+                        "shell_command": [],
+                    }
+                ],
+            }
+        )
 
     server = Server(
         socket_path=join(tempfile.gettempdir(), "tmux_%s_socket" % server_name),
-        #socket_name="tmux_%s_new" % server_name,
-        config_file=expanduser("~/.tmux/%s.conf" % server_name))
-    
+        # socket_name="tmux_%s_new" % server_name,
+        config_file=expanduser("~/.tmux/%s.conf" % server_name),
+    )
+
     builder = WorkspaceBuilder(sconf=session_config, server=server)
     session = None
-    if args.get('-k'):
+    if args.get("-k"):
         try:
-            session = server.find_where(
-                {'session_name': session_name})
+            session = server.find_where({"session_name": session_name})
             session.kill_session()
         except Exception as e:
             logging.exception("Error killing session")
             pass
         exit(0)
-    if args.get('-l'):
+    if args.get("-l"):
         print(server.list_sessions())
         exit(0)
     try:
         logging.debug("Creating new Session ...")
         session = server.new_session(
-            session_name=session_name)
+            session_name=session_name,
+            start_directory=session_config.get("start_directory", "~/Sync"),
+        )
         logging.debug("Done Creating new Session.")
     except exc.TmuxSessionExists:
         logging.debug("Session exists")
@@ -149,49 +157,59 @@ if __name__ == "__main__":
         builder.build(session)
     except exc.TmuxSessionExists:
         logging.debug("builder session exists")
-        session = session or builder.session or server.findWhere(
-            {'session_name': session_name})
+        session = (
+            session
+            or builder.session
+            or server.findWhere({"session_name": session_name})
+        )
 
     builder = WorkspaceBuilder(sconf=session_config, server=server)
     session = None
     sessions = None
     try:
         sessions = server.list_sessions()
-        session = [s for s in sessions if s['session_name'] == session_name]
+        session = [s for s in sessions if s["session_name"] == session_name]
     except exc.TmuxpException:
         pass
     if not session:
         session = server.new_session(
-            session_name=session_name, kill_session=True)
+            session_name=session_name,
+            kill_session=True,
+            start_directory=session_config.get("start_directory", "~/Music"),
+        )
         builder.build(session)
     else:
         session = session.pop()
 
-    #if server_name == "outer":
+    # if server_name == "outer":
     #    session.set_option("status-position", "top")
-    #else:
+    # else:
     #    session.set_option("status-position", "bottom")
 
-    if not args['-d']:
+    if not args["-d"]:
         server.cmd("detach-client", "-s", session_name)
 
     status_right, status_left = get_status_line(host_config, remote)
-    #for session in sessions:
+    # for session in sessions:
     try:
         session.set_option("status-right", status_right)
         session.set_option("status-left", status_left)
-        session.set_environment('SSH_AUTH_SOCK', os.environ.get('SSH_AUTH_SOCK'))
-        session.set_environment('SSH_AGENT_PID', os.environ.get('SSH_AGENT_PID'))
+        session.set_environment(
+            "SSH_AUTH_SOCK", os.environ.get("SSH_AUTH_SOCK")
+        )
+        session.set_environment(
+            "SSH_AGENT_PID", os.environ.get("SSH_AGENT_PID")
+        )
         if not remote:
-            session.cmd('set-environment', '-gu', 'SSH_HOST_STR')
-            session.cmd('set-environment', '-gu', 'SSH_TTY_SET')
-        session.cmd("set_option", '-g', 'allow-rename', 'on')
-        session.cmd("set_option", '-g', 'automatic-rename', 'on')
+            session.cmd("set-environment", "-gu", "SSH_HOST_STR")
+            session.cmd("set-environment", "-gu", "SSH_TTY_SET")
+        session.cmd("set_option", "-g", "allow-rename", "on")
+        session.cmd("set_option", "-g", "automatic-rename", "on")
     except Exception:
         logging.exception("error setting up session")
 
-    if not args['-d']:
-        if 'TMUX' in os.environ and server_name == 'outer':
-            os.system('tmux rename-window %s' % session_name)
+    if not args["-d"]:
+        if "TMUX" in os.environ and server_name == "outer":
+            os.system("tmux rename-window %s" % session_name)
         else:
             server.attach_session(session_name)
