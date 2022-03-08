@@ -13,13 +13,13 @@
             }
         },
         'term0': {
-            "start_directory": "~/streethawk/slicecloud/", 
+            "start_directory": "~/devel/", 
             'windows': {
                 'python_dev': {
-                    "start_directory": "~/streethawk/slicecloud/", 
+                    "start_directory": "~/devel/", 
                   },
                 'devops_dev': {
-                    "start_directory": "~/streethawk/infrastructure/", 
+                    "start_directory": "~/devel/", 
                   },
                 'riak_dev': {},
                 'js_dev': {},

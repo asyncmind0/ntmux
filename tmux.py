@@ -60,7 +60,7 @@ def gen_session_config(name, config_map):
             for name, config in config_map.get("windows", {}).items()
         ],
         "options": {"base-index": 0},
-        "start_directory": config_map.get("start_directory", "~/streethawk"),
+        "start_directory": config_map.get("start_directory", "~/"),
     }
 
 
@@ -105,10 +105,6 @@ if __name__ == "__main__":
     )
     windows = session_config["windows"]
     for i in range(10 - len(windows)):
-        # if session_name == "python_dev":
-        #    import ipdb
-
-        #    ipdb.set_trace()  ######## FIXME:REMOVE ME steven.joseph ################
         print(session_config)
         session_config["windows"].append(
             {
@@ -147,7 +143,7 @@ if __name__ == "__main__":
         logging.debug("Creating new Session ...")
         session = server.new_session(
             session_name=session_name,
-            start_directory=session_config.get("start_directory", "~/Sync"),
+            start_directory=session_config.get("start_directory", "~/"),
         )
         logging.debug("Done Creating new Session.")
     except exc.TmuxSessionExists:
@@ -164,22 +160,21 @@ if __name__ == "__main__":
         )
 
     builder = WorkspaceBuilder(sconf=session_config, server=server)
-    session = None
     sessions = None
-    try:
-        sessions = server.list_sessions()
-        session = [s for s in sessions if s["session_name"] == session_name]
-    except exc.TmuxpException:
-        pass
+    if not session:
+        try:
+            sessions = server.list_sessions()
+            session = [s for s in sessions if s["session_name"] == session_name]
+            session = session[0] if session else session
+        except exc.TmuxpException:
+            pass
     if not session:
         session = server.new_session(
             session_name=session_name,
             kill_session=True,
-            start_directory=session_config.get("start_directory", "~/Music"),
+            start_directory=session_config.get("start_directory", "~/"),
         )
         builder.build(session)
-    else:
-        session = session.pop()
 
     # if server_name == "outer":
     #    session.set_option("status-position", "top")
