@@ -25,6 +25,8 @@ import platform
 import logging
 import yaml
 import tempfile
+import sys
+
 
 logging.basicConfig(level=logging.INFO)
 
@@ -135,10 +137,10 @@ if __name__ == "__main__":
         except Exception as e:
             logging.exception("Error killing session")
             pass
-        exit(0)
+        sys.exit(0)
     if args.get("-l"):
         print(server.list_sessions())
-        exit(0)
+        sys.exit(0)
     try:
         logging.debug("Creating new Session ...")
         session = server.new_session(
@@ -148,7 +150,6 @@ if __name__ == "__main__":
         logging.debug("Done Creating new Session.")
     except exc.TmuxSessionExists:
         logging.debug("Session exists")
-        pass
     try:
         builder.build(session)
     except exc.TmuxSessionExists:
