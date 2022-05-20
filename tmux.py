@@ -42,13 +42,14 @@ def gen_window_config(name, window_config):
         "panes": [
             {
                 "shell_command": [
-                    window_config.get(
-                        "shell_command", default_inner_cmd.format(name=name)
-                    )
+                    {
+                        "cmd": window_config.get(
+                            "shell_command",
+                            default_inner_cmd.format(name=name),
+                        )
+                    }
                 ],
-                "start_directory": window_config.get(
-                    "start_directory", "~/tmp"
-                ),
+                "start_directory": window_config.get("start_directory", "~/"),
             },
         ],
     }
@@ -111,14 +112,8 @@ if __name__ == "__main__":
         session_config["windows"].append(
             {
                 "window_name": session_name,
-                "start_directory": session_config.get(
-                    "start_directory", "~/snap"
-                ),
-                "panes": [
-                    {
-                        "shell_command": [],
-                    }
-                ],
+                "start_directory": session_config.get("start_directory", "~/"),
+                "panes": [{"shell_command": []}],
             }
         )
 
