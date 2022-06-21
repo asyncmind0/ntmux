@@ -200,7 +200,6 @@ if __name__ == "__main__":
         logging.exception("error setting up session")
 
     if not args["-d"]:
-        if "TMUX" in os.environ and server_name == "outer":
+        if "TMUX" in os.environ and "outer" in str(os.environ["TMUX"]):
             os.system("tmux rename-window %s" % session_name)
-        else:
-            server.attach_session(session_name)
+        server.attach_session(session_name)
