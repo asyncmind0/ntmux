@@ -5,11 +5,12 @@
         'term1': {
             'windows': {
                 'python': {},
+                'erlang': {},
                 'devops': {},
-                'riak': {},
-                'js': {},
-                'mobile': {},
-                'home': {}
+                'clientside': {},
+                'bdd': {},
+                'home': {},
+                'doco': {}
             }
         },
         'term0': {
@@ -30,8 +31,17 @@
         'term2': {
             'windows': {
                 'local': {},
-                'zebra': {},
-                'bison': {},
+                'staging': {},
+                'prod': {},
+                'crypto': {},
+                'qtile': {}
+            }
+        },
+        'bdd': {
+            'windows': {
+                'bdd_local': {},
+                'bdd_staging': {},
+                'bdd_prod': {}
             }
         },
         'comm': {
