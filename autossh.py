@@ -17,62 +17,62 @@ import shlex
 
 def optparsing():
     args = docopt(__doc__)
-    args['identity'] = args.get('--identity')
-    hostname = args.get('<hostname>', 'autossh')
+    args["identity"] = args.get("--identity")
+    hostname = args.get("<hostname>", "autossh")
     port = None
-    if ':' in hostname:
-        hostname, port = hostname.split(':', 1)
-    args['hostname'] = hostname
-    args['port'] = port
-    args['<sessionname>'] = args['<sessionname>'] or hostname.split('.', 1)[0]
-    args['<server>'] = args['<server>'] or 'inner'
+    if ":" in hostname:
+        hostname, port = hostname.split(":", 1)
+    args["hostname"] = hostname
+    args["port"] = port
+    args["<sessionname>"] = args["<sessionname>"] or hostname.split(".", 1)[0]
+    args["<server>"] = args["<server>"] or "inner"
     print(args)
     return args
 
+
 def deploy(args):
     ssh[
-        args['hostname'],
-        'git clone https://jagguli@bitbucket.org/jagguli/dottmux.git ~/.tmux' % args
+        args["hostname"],
+        "git clone https://jagguli@bitbucket.org/jagguli/dottmux.git ~/.tmux"
+        % args,
     ] & FG((0, 128))
-    ssh[
-        args['hostname'],
-        'tmux -V'
-    ] & FG
-    ssh[
-        args['hostname'],
-        'cd ~/.tmux; sh setup.sh'
-    ] & FG
+    ssh[args["hostname"], "tmux -V"] & FG
+    ssh[args["hostname"], "cd ~/.tmux; sh setup.sh"] & FG
 
 
 def attach_tmux(args):
-    has_tmux = os.environ.get('TMUX')
+    has_tmux = os.environ.get("TMUX")
     prev_window_name = None
     if has_tmux:
         prev_window_name = tmux("display-message", "-p", "x'#W")
-        tmux("rename-window", args['hostname'])
+        tmux("rename-window", args["hostname"])
     cmd = []
     cmd.extend(
         [
             "autossh",
-            args['hostname'],
-            "-M", "0",
+            "-M",
+            "0",
+            args["hostname"],
+            "-t",
             "-o",
             "ServerAliveInterval=10",
             "ServerAliveCountMax=5",
         ]
     )
-    if args['port']:
-        cmd.extend(('-p', args['port']))
-    cmd.extend((
-        "-t", "PATH=$PATH:~/.local/bin/ exec tmux.py -r {<server>} {<sessionname>}".format(
-            **args)))
+    if args["port"]:
+        cmd.extend(("-p", args["port"]))
+    cmd.append(
+        "PATH=$PATH:~/.local/bin/ exec tmux.py -r {<server>} {<sessionname>}".format(
+            **args
+        )
+    )
 
-    if args['identity']:
-        cmd.extend(['-i', args['identity']])
+    if args["identity"]:
+        cmd.extend(["-i", args["identity"]])
 
     pid_file = "/tmp/autossh_%(<server>)s_%(<sessionname>)s.pid" % args
-    os.environ['AUTOSSH_PIDFILE'] = pid_file
-    os.environ['SSH_AUTH_SOCK'] = "/run/user/1000/gnupg/S.gpg-agent.ssh"
+    os.environ["AUTOSSH_PIDFILE"] = pid_file
+    os.environ["SSH_AUTH_SOCK"] = "/run/user/1000/gnupg/S.gpg-agent.ssh"
     os.environ["PATH"] += os.pathsep + os.pathsep.join(
         [
             "~/.local/bin/",
@@ -88,6 +88,7 @@ def attach_tmux(args):
 
     os.execvpe(cmd[0], cmd, dict(os.environ))
 
-if __name__ == '__main__':
-    #deploy(optparsing())
+
+if __name__ == "__main__":
+    # deploy(optparsing())
     attach_tmux(optparsing())
