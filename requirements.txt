@@ -1,3 +1,4 @@
 docopt
 tmuxp
 plumbum
+pyinstaller>=3.3.1

@@ -4,20 +4,32 @@ Usage: autossh.py [options] <hostname> [<server> <sessionname>]
 
 Options:
   -i FILE --identity FILE
+  -b --binary-build
 
 """
 import signal
 import os
-from os.path import isfile
+from os.path import isfile, join
 from docopt import docopt
-from plumbum import FG
-from plumbum.cmd import tmux, ssh
-import shlex
+import subprocess
+import tempfile
+
+
+def get_env():
+    env = dict(os.environ)  # make a copy of the environment
+    lp_key = "LD_LIBRARY_PATH"  # for Linux and *BSD.
+    lp_orig = env.get(lp_key + "_ORIG")  # pyinstaller >= 20160820 has this
+    if lp_orig is not None:
+        env[lp_key] = lp_orig  # restore the original, unmodified value
+    else:
+        env.pop(lp_key, None)  # last resort: remove the env var
+    return env
 
 
 def optparsing():
     args = docopt(__doc__)
     args["identity"] = args.get("--identity")
+    args["binary"] = args.get("--binary-build")
     hostname = args.get("<hostname>", "autossh")
     port = None
     if ":" in hostname:
@@ -44,33 +56,45 @@ def attach_tmux(args):
     has_tmux = os.environ.get("TMUX")
     prev_window_name = None
     if has_tmux:
-        prev_window_name = tmux("display-message", "-p", "x'#W")
-        tmux("rename-window", args["hostname"])
+        prev_window_name = subprocess.check_output(
+            ["tmux", "display-message", "-p", "x'#W"], env=get_env()
+        )
+        subprocess.check_call(
+            ["tmux", "rename-window", args["hostname"]], env=get_env()
+        )
     cmd = []
     cmd.extend(
         [
             "autossh",
             "-M",
             "0",
-            args["hostname"],
             "-t",
+            args["hostname"],
             "-o",
             "ServerAliveInterval=10",
+            "-o",
             "ServerAliveCountMax=5",
         ]
     )
     if args["port"]:
         cmd.extend(("-p", args["port"]))
-    cmd.append(
-        "PATH=$PATH:~/.local/bin/ exec tmux.py -r {<server>} {<sessionname>}".format(
-            **args
+    if args["binary"]:
+
+        cmd.append("exec tmuxpy -r {<server>} {<sessionname>}".format(**args))
+    else:
+        cmd.append(
+            "PATH=$PATH:~/.local/bin/ exec tmux.py -r {<server>} {<sessionname>}".format(
+                **args
+            )
         )
-    )
 
     if args["identity"]:
         cmd.extend(["-i", args["identity"]])
 
-    pid_file = "/tmp/autossh_%(<server>)s_%(<sessionname>)s.pid" % args
+    pid_file = join(
+        tempfile.gettempdir(),
+        "autossh_%(<server>)s_%(<sessionname>)s.pid" % args,
+    )
     os.environ["AUTOSSH_PIDFILE"] = pid_file
     os.environ["SSH_AUTH_SOCK"] = "/run/user/1000/gnupg/S.gpg-agent.ssh"
     os.environ["PATH"] += os.pathsep + os.pathsep.join(
@@ -86,7 +110,7 @@ def attach_tmux(args):
             except Exception as e:
                 os.unlink(pid_file)
 
-    os.execvpe(cmd[0], cmd, dict(os.environ))
+    os.execvpe(cmd[0], cmd, get_env())
 
 
 if __name__ == "__main__":

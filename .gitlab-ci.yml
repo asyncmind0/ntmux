@@ -1,0 +1,20 @@
+image: docker:latest
+services:
+  - docker:dind
+stages:
+  - build
+
+docker:
+  stage: build
+  artifacts:
+    paths:
+      - etc/
+      - bin/
+  script:
+    - docker run -v "$(pwd):/src/" cdrx/pyinstaller-linux:python2 "pyinstaller --clean -y --dist ./dist/linux --workpath /tmp autossh.spec && pyinstaller --clean -y --dist ./dist/linux --workpath /tmp tmux.spec &&  chown -R --reference=. ./dist/linux"
+    - mkdir -p etc/tmuxpy bin
+    - cp common.conf etc/tmuxpy/
+    - cp inner.conf etc/tmuxpy/
+    - cp outer.conf etc/tmuxpy/
+    - cp *.yml etc/tmuxpy/
+    - cp dist/linux/* bin/

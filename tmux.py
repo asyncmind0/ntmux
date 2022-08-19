@@ -7,7 +7,8 @@ Usage: tmux.py <server> <session> [options]
 
 Options:
   --window-name=WINDOW_NAME
-  -c --config=STRING        window configuration file [default: ~/.tmux/configs/default.yml]
+  -w --windows-config=STRING        window configuration file [default: windows.yml]
+  -c --tmux-config=STRING        tmux configuration file [default: inner.conf]
   -d                        Start detached
   -k                        kill server
   -r                        remote server
@@ -17,7 +18,7 @@ Options:
 """
 from docopt import docopt
 import os
-from os.path import expanduser, join
+from os.path import expanduser, join, exists
 from tmuxp.workspacebuilder import WorkspaceBuilder
 from libtmux.server import Server
 from libtmux import exc
@@ -27,12 +28,23 @@ import yaml
 import tempfile
 import sys
 
-
 logging.basicConfig(level=logging.INFO)
 
 
 formatted_hostname = platform.node().split(".")[0].lower()
 default_inner_cmd = ("python %s inner {name} ") % __file__
+FROZEN = getattr(sys, "frozen", False)
+
+
+def get_env():
+    env = dict(os.environ)  # make a copy of the environment
+    lp_key = "LD_LIBRARY_PATH"  # for Linux and *BSD.
+    lp_orig = env.get(lp_key + "_ORIG")  # pyinstaller >= 20160820 has this
+    if lp_orig is not None:
+        env[lp_key] = lp_orig  # restore the original, unmodified value
+    else:
+        env.pop(lp_key, None)  # last resort: remove the env var
+    return env
 
 
 def gen_window_config(name, window_config):
@@ -85,7 +97,33 @@ def get_status_line(host_config, remote):
     return status_right, status_left
 
 
+def get_config(conf_file):
+    config_locations = [
+        expanduser(
+            args.get("--%s-config" % (conf_file.split(".")[0] or ""), "")
+        ),
+        expanduser("~/.tmux/%s" % conf_file),
+        expanduser("~/.tmuxpy/%s" % conf_file),
+        expanduser("~/.local/etc/tmuxpy/%s" % conf_file),
+        "/usr/local/etc/tmuxpy/%s" % conf_file,
+        "/etc/tmuxpy/%s" % conf_file,
+    ]
+    for conf in config_locations:
+        if exists(conf):
+            return conf
+    raise Exception(
+        """No %s config found!!
+Please set config in one of these locations:
+%s"""
+        % (conf_file, "\n".join(config_locations))
+    )
+
+
 if __name__ == "__main__":
+    if FROZEN:
+        os.environ["LD_LIBRARY_PATH"] = os.environ.get(
+            "LD_LIBRARY_PATH_ORIG", ""
+        )
     args = docopt(__doc__)
     print(args)
     server_name = args["<server>"]
@@ -98,9 +136,9 @@ if __name__ == "__main__":
     )
 
     host_config = {}
-    for outer, inners in yaml.load(
-        open(expanduser(args["--config"])), Loader=yaml.FullLoader
-    )["windows"].items():
+    for outer, inners in yaml.load(open(get_config(args["--windows-config"])))[
+        "windows"
+    ].items():
         host_config[outer] = gen_session_config(
             outer,
             inners,
@@ -123,9 +161,8 @@ if __name__ == "__main__":
     server = Server(
         socket_path=join(tempfile.gettempdir(), "tmux_%s_socket" % server_name),
         # socket_name="tmux_%s_new" % server_name,
-        config_file=expanduser("~/.tmux/%s.conf" % server_name),
+        config_file=get_config("%s.conf" % server_name),
     )
-
     builder = WorkspaceBuilder(sconf=session_config, server=server)
     session = None
     if args.get("-k"):

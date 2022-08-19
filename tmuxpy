@@ -1,9 +1,0 @@
-#!/bin/sh
-SCRIPTPATH="$(dirname "$(readlink -f "$0")")"
-cd $SCRIPTPATH
-WORKON_HOME=${SCRIPTPATH}/venv
-if [ -d "$WORKON_HOME" ]; then
-    pipenv run tmux.py $@
-else
-    tmux.py $@
-fi
