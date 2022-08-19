@@ -93,6 +93,9 @@ if __name__ == "__main__":
     remote = args["-r"]  # or os.environ.get('SSH_TTY')
     kill = args["-k"]
     os.chdir(expanduser("~"))
+    os.environ["PATH"] += os.pathsep + os.pathsep.join(
+        ["~/.local/bin/", "/usr/local/bin/"]
+    )
 
     host_config = {}
     for outer, inners in yaml.load(
