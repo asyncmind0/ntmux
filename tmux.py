@@ -99,9 +99,7 @@ def get_status_line(host_config, remote):
 
 def get_config(conf_file):
     config_locations = [
-        expanduser(
-            args.get("--%s-config" % (conf_file.split(".")[0] or ""), "")
-        ),
+        conf_file,
         expanduser("~/.tmux/%s" % conf_file),
         expanduser("~/.tmuxpy/%s" % conf_file),
         expanduser("~/.local/etc/tmuxpy/%s" % conf_file),
@@ -110,6 +108,7 @@ def get_config(conf_file):
     ]
     for conf in config_locations:
         if exists(conf):
+            print(f"using config {conf}")
             return conf
     raise Exception(
         """No %s config found!!
@@ -136,7 +135,7 @@ if __name__ == "__main__":
     )
 
     host_config = {}
-    for outer, inners in yaml.load(open(get_config(args["--windows-config"])))[
+    for outer, inners in yaml.load(open(args["--windows-config"]))[
         "windows"
     ].items():
         host_config[outer] = gen_session_config(
