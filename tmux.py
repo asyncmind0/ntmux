@@ -101,7 +101,7 @@ def get_config(conf_file):
     config_locations = [
         conf_file,
         expanduser("~/.tmux/%s" % basename(conf_file)),
-        expanduser("~/.tmuxpy/%s" % basename(conf_file),
+        expanduser("~/.tmuxpy/%s" % basename(conf_file)),
         expanduser("~/.local/etc/tmuxpy/%s" % basename(conf_file)),
         "/usr/local/etc/tmuxpy/%s" % basename(conf_file),
         "/etc/tmuxpy/%s" % basename(conf_file),
