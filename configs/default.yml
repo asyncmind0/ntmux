@@ -25,7 +25,9 @@
                 'riak_dev': {},
                 'js_dev': {},
                 'mobile_dev': {},
-                'home_dev': {}
+                'home_dev': {},
+                'flutter_dev': {},
+                'bdd_dev': {}
             }
         },
         'term2': {
@@ -34,7 +36,9 @@
                 'staging': {},
                 'prod': {},
                 'crypto': {},
-                'qtile': {}
+                'qtile': {},
+                'flutter': {},
+                'bddrun': {}
             }
         },
         'bdd': {
@@ -57,7 +61,7 @@
             'windows': {
                 'test_inner': {
                 },
-                'test2': {},
+                'test2': {}
             }
         },
         'test_inner': {
