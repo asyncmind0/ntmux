@@ -19,7 +19,7 @@ Options:
 from docopt import docopt
 import os
 from os.path import expanduser, join, exists, basename
-from tmuxp.workspacebuilder import WorkspaceBuilder
+from tmuxp.workspace.builder import WorkspaceBuilder
 from libtmux.server import Server
 from libtmux import exc
 import platform

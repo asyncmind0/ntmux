@@ -1,4 +1,3 @@
 docopt
-tmuxp
+tmuxp==1.19.1
 plumbum
-pyinstaller>=3.3.1
