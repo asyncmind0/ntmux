@@ -135,9 +135,9 @@ if __name__ == "__main__":
     )
 
     host_config = {}
-    for outer, inners in yaml.load(open(get_config(args["--windows-config"])))[
-        "windows"
-    ].items():
+    for outer, inners in yaml.safe_load(
+        open(get_config(args["--windows-config"]))
+    )["windows"].items():
         host_config[outer] = gen_session_config(
             outer,
             inners,
