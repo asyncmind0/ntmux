@@ -96,7 +96,7 @@ def attach_tmux(args):
         "autossh_%(<server>)s_%(<sessionname>)s.pid" % args,
     )
     os.environ["AUTOSSH_PIDFILE"] = pid_file
-    os.environ["SSH_AUTH_SOCK"] = "/run/user/1000/gnupg/S.gpg-agent.ssh"
+    # os.environ["SSH_AUTH_SOCK"] = "/run/user/1000/gnupg/S.gpg-agent.ssh"
     os.environ["PATH"] += os.pathsep + os.pathsep.join(
         [
             "~/.local/bin/",
