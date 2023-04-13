@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/sbin/env python
 # -*- coding: utf-8 -*-
 """
 tmux.py
@@ -6,9 +6,8 @@ tmux.py
 Usage: tmux.py <server> <session> [options]
 
 Options:
-  --window-name=WINDOW_NAME
-  -w --windows-config=STRING        window configuration file [default: windows.yml]
-  -c --tmux-config=STRING        tmux configuration file [default: inner.conf]
+  -w --windows-config=STRING        window configuration file [default: ~/.tmux/configs/default.yml]
+  -c --tmux-config=STRING        tmux configuration file [default: ~/.tmux/inner.conf]
   -d                        Start detached
   -k                        kill server
   -r                        remote server
@@ -32,7 +31,9 @@ logging.basicConfig(level=logging.INFO)
 
 
 formatted_hostname = platform.node().split(".")[0].lower()
-default_inner_cmd = ("python %s inner {name} ") % __file__
+default_inner_cmd = (
+    "python %s inner -w ~/.tmux/configs/default.yml {name} "
+) % __file__
 FROZEN = getattr(sys, "frozen", False)
 
 
@@ -48,7 +49,6 @@ def get_env():
 
 
 def gen_window_config(name, window_config):
-    print("window config: %s" % window_config)
     return {
         "window_name": name,
         "panes": [
@@ -153,7 +153,20 @@ if __name__ == "__main__":
             {
                 "window_name": session_name,
                 "start_directory": session_config.get("start_directory", "~/"),
-                "panes": [{"shell_command": []}],
+                "panes": [
+                    {
+                        "shell_command": [
+                            {
+                                "cmd": session_config.get(
+                                    "shell_command",
+                                    default_inner_cmd.format(name=session_name),
+                                )
+                            }
+                        ]
+                        if "shell_command" in session_config
+                        else [],
+                    }
+                ],
             }
         )
 
@@ -233,7 +246,7 @@ if __name__ == "__main__":
         if not remote:
             session.cmd("set-environment", "-gu", "SSH_HOST_STR")
             session.cmd("set-environment", "-gu", "SSH_TTY_SET")
-        session.cmd("set_option", "-g", "allow-rename", "on")
+        # session.cmd("set_option", "-g", "allow-rename", "on")
         session.cmd("set_option", "-g", "automatic-rename", "on")
     except Exception:
         logging.exception("error setting up session")
