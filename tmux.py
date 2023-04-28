@@ -1,4 +1,4 @@
-#!/usr/sbin/env python
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 """
 tmux.py
@@ -99,7 +99,7 @@ def get_status_line(host_config, remote):
 
 def get_config(conf_file):
     config_locations = [
-        conf_file,
+        expanduser(conf_file),
         expanduser("~/.tmux/%s" % basename(conf_file)),
         expanduser("~/.tmuxpy/%s" % basename(conf_file)),
         expanduser("~/.local/etc/tmuxpy/%s" % basename(conf_file)),
