@@ -60,7 +60,8 @@ def attach_tmux(args):
             ["tmux", "display-message", "-p", "x'#W"], env=get_env()
         )
         subprocess.check_call(
-            ["tmux", "rename-window", args["hostname"]], env=get_env()
+            ["tmux", "rename-window", args["hostname"].split(".")[0]],
+            env=get_env(),
         )
     cmd = []
     cmd.extend(
@@ -79,7 +80,6 @@ def attach_tmux(args):
     if args["port"]:
         cmd.extend(("-p", args["port"]))
     if args["binary"]:
-
         cmd.append("exec tmuxpy -r {<server>} {<sessionname>}".format(**args))
     else:
         cmd.append(
