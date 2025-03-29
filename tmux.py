@@ -108,7 +108,7 @@ def get_config(conf_file):
     ]
     for conf in config_locations:
         if exists(conf):
-            print(f"using config {conf}")
+            logging.debug(f"using config {conf}")
             return conf
     raise Exception(
         """No %s config found!!
@@ -118,17 +118,16 @@ Please set config in one of these locations:
     )
 
 
-if __name__ == "__main__":
+def main():
     if FROZEN:
         os.environ["LD_LIBRARY_PATH"] = os.environ.get(
             "LD_LIBRARY_PATH_ORIG", ""
         )
     args = docopt(__doc__)
-    print(args)
+    logging.debug(args)
     server_name = args["<server>"]
     session_name = args["<session>"]
     remote = args["-r"]  # or os.environ.get('SSH_TTY')
-    kill = args["-k"]
     os.chdir(expanduser("~"))
     os.environ["PATH"] += os.pathsep + os.pathsep.join(
         ["~/.local/bin/", "/usr/local/bin/"]
@@ -148,7 +147,7 @@ if __name__ == "__main__":
     )
     windows = session_config["windows"]
     for i in range(10 - len(windows)):
-        print(session_config)
+        logging.debug(session_config)
         session_config["windows"].append(
             {
                 "window_name": session_name,
@@ -180,13 +179,15 @@ if __name__ == "__main__":
     if args.get("-k"):
         try:
             session = server.find_where({"session_name": session_name})
-            session.kill_session()
+            logging.info(f"Killing session {session_name}")
+            if session:
+                session.kill_session()
         except Exception as e:
             logging.exception("Error killing session")
             pass
         sys.exit(0)
     if args.get("-l"):
-        print(server.list_sessions())
+        logging.debug(server.list_sessions())
         sys.exit(0)
     try:
         logging.debug("Creating new Session ...")
@@ -217,12 +218,23 @@ if __name__ == "__main__":
         except exc.TmuxpException:
             pass
     if not session:
-        session = server.new_session(
-            session_name=session_name,
-            kill_session=True,
-            start_directory=session_config.get("start_directory", "~/"),
+        # session = server.new_session(
+        #    session_name=session_name,
+        #    kill_session=True,
+        #    start_directory=session_config.get("start_directory", "~/"),
+        # )
+        # builder.build(session)
+        os.execvpe(
+            "/usr/sbin/tmux",
+            [
+                f"-f{get_config('%s.conf' % server_name)}",
+                f"-S{join(tempfile.gettempdir(), 'tmux_%s_socket' % server_name)}",
+                "new-session",
+                f"-t{session_name}",
+                "-d",
+            ],
+            os.environ,
         )
-        builder.build(session)
 
     # if server_name == "outer":
     #    session.set_option("status-position", "top")
@@ -252,4 +264,18 @@ if __name__ == "__main__":
         logging.exception("error setting up session")
 
     if not args["-d"]:
-        server.attach_session(session_name)
+        os.execvpe(
+            "/usr/sbin/tmux",
+            [
+                f"-f{get_config('%s.conf' % server_name)}",
+                f"-S{join(tempfile.gettempdir(), 'tmux_%s_socket' % server_name)}",
+                "attach-session",
+                f"-t{session_name}",
+            ],
+            os.environ,
+        )
+        # server.attach_session(session_name)
+
+if __name__ == "__main__":
+    main()
+    logging.info("Tmuxpy done.")
