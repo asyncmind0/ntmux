@@ -4,30 +4,41 @@
     'windows': {
         'term1': {
             'windows': {
-                'python': {},
                 'erlang': {},
                 'devops': {},
                 'clientside': {},
                 'bdd': {},
                 'home': {},
-                'doco': {}
+                'doco': {},
+                'damage': {
+                  },
+                'asyncmind': {
+                  },
+                'node0': {
+                    'shell_command': 'autossh.py node0.lan'
+                },
+                'razorjack': {
+                    'shell_command': 'autossh.py razorjack.lan'
+                },
+                'doombox': {
+                    'shell_command': 'autossh.py doombox.lan'
+                },
+                'yoga': {
+                    'shell_command': 'autossh.py yoga0.lan'
+                },
+                'threadripper1': {
+                    'shell_command': 'autossh.py threadripper1.lan'
+                },
+                'surface': {
+                    'shell_command': 'autossh.py surface0.lan'
+                }
             }
         },
         'term0': {
             "start_directory": "~/devel/", 
             'windows': {
-                'python_dev': {
-                    "start_directory": "~/devel/", 
-                  },
-                'devops_dev': {
-                    "start_directory": "~/devel/", 
-                  },
-                'riak_dev': {},
-                'js_dev': {},
-                'mobile_dev': {},
-                'home_dev': {},
-                'flutter_dev': {},
-                'bdd_dev': {}
+                'system': {},
+                'audio': {}
             }
         },
         'term2': {
@@ -38,17 +49,101 @@
                 'crypto': {},
                 'qtile': {},
                 'flutter': {},
-                'bddrun': {}
+                'bddrun': {},
+                'ai': {}
             }
         },
-        'bdd': {
+        'staging': {
+            "start_directory": "~/DamageInc/DamageBDD/"
+        },
+        'local': {
             'windows': {
-                'bdd_local': {},
-                'bdd_staging': {},
-                'bdd_prod': {}
+                'dmesg': {
+                    'shell_command': 'sudo dmesg -w'
+                },
+                'journalctl': {
+                    'shell_command': 'journalctl -f'
+                }
             }
         },
-        'comm': {
+        'asyncmind': {
+            'windows': {
+                'asyncmind': {
+                    "start_directory": "~/DamageInc/asyncmind/",
+                    'shell_command': 'rebar3 shell'
+                },
+                'debug': {
+                    "start_directory": "~/DamageInc/asyncmind/",
+                    'shell_command': 'tail -F logs/debug.log'
+                },
+                'error': {
+                    "start_directory": "~/DamageInc/asyncmind/",
+                    'shell_command': 'tail -F logs/error.log'
+                },
+                'info': {
+                    "start_directory": "~/DamageInc/asyncmind/",
+                    'shell_command': 'tail -F logs/info.log'
+                },
+            }
+        },
+        'damage': {
+            'windows': {
+                'damage': {
+                    "start_directory": "~/DamageInc/DamageBDD/",
+                    'shell_command': 'rebar3 shell'
+                },
+                'debug': {
+                    "start_directory": "~/DamageInc/DamageBDD/",
+                    'shell_command': 'tail -F logs/debug.log'
+                },
+                'error': {
+                    "start_directory": "~/DamageInc/DamageBDD/",
+                    'shell_command': 'tail -F logs/error.log'
+                },
+                'info': {
+                    "start_directory": "~/DamageInc/DamageBDD/",
+                    'shell_command': 'tail -F logs/info.log'
+                },
+            }
+        },
+        'system': {
+            "start_directory": "~/devel/",
+            'windows': {
+                'htop':{
+                    'shell_command': 'htop'
+                },
+                'nvtop':{
+                    'shell_command': 'nvtop'
+                },
+                'nvidia': {
+                    'shell_command': 'nvidia-smi -l'
+                }
+            }
+        },
+        'bddrun': {
+            'windows': {
+                'bdd_local': {
+                    "start_directory": "~/DamageInc/DamageBDD/"
+                },
+                'bdd_staging': {
+                    "start_directory": "~/DamageInc/DamageBDD/"
+                },
+                'bdd_prod': {
+                    "start_directory": "~/DamageInc/DamageBDD/"
+                }
+            }
+        },
+        'ai': {
+            'windows': {
+                'asyncmind_ai': {
+                    "start_directory": "~/devel/asyncmind/"
+                },
+                'damage_ai': {
+                    "start_directory": "~/DamageInc/DamageBDD/"
+                }
+            }
+        },
+        'comms': {
             'windows': {
                 'network': {},
                 'system': {},
@@ -71,6 +166,29 @@
                 },
                 'htop': {
                     'shell_command': 'htop'
+                }
+            }
+        },
+        'qtile': {
+            'windows': {
+                'taqtile': {
+                    'shell_command': 'tail -F ~/.local/share/qtile/qtile.taqtile.log'
+                },
+                'qtile': {
+                    'shell_command': 'tail -n 30 -F ~/.local/share/qtile/qtile.log'
+                },
+                'pipewire': {
+                    'shell_command': 'journalctl --user -f -u pipewire'
+                }
+            }
+        },
+        'audio': {
+            'windows': {
+                'mixer': {
+                    'shell_command': 'pulsemixer'
+                },
+                'spotify': {
+                    'shell_command': 'spt'
                 }
             }
         }
