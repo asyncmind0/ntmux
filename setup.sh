@@ -1,4 +1,5 @@
 #!/bin/sh -x
+sudo pacman -S --needed wget tmux python-pip
 BASE_DIR=/usr/local/etc/tmux
 if [ ! -d $BASE_DIR ]; then
     BASE_DIR=$HOME/.tmux/
@@ -7,7 +8,7 @@ if [ -z "$NO_PIP_INSTALL" ]; then
     pip install -U --user --break-system-packages -r $BASE_DIR/requirements.txt
 fi
 mkdir -p $HOME/.local/bin/
-wget -o tmuxpy.zip "https://gitlab.com/api/v4/projects/7957517/jobs/artifacts/master/download?job=docker"
+#wget -o tmuxpy.zip "https://gitlab.com/api/v4/projects/7957517/jobs/artifacts/master/download?job=docker"
 ln -sf $HOME/.tmux/autossh.py $HOME/.local/bin/
 ln -sf $HOME/.tmux/tmux.py $HOME/.local/bin/
 ln -sf $HOME/.tmux/tmuxpy $HOME/.local/bin/
